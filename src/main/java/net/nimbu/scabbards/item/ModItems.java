@@ -8,10 +8,10 @@ import net.nimbu.scabbards.Scabbards;
 import net.nimbu.scabbards.item.custom.ScabbardItem;
 
 public class ModItems {
-    public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(Scabbards.MODID);
+    public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(Scabbards.MOD_ID);
 
     public static final DeferredItem<Item> SCABBARD = ITEMS.register("scabbard",
-            () -> new ScabbardItem(new Item.Properties()));
+            () -> new ScabbardItem(new Item.Properties().stacksTo(1)));
 
     public static void register(IEventBus eventBus){
         ITEMS.register(eventBus);

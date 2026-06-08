@@ -6,6 +6,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.stats.Stats;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
@@ -17,12 +18,11 @@ import net.minecraft.world.inventory.ClickAction;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.inventory.tooltip.BundleTooltip;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.ItemUtils;
-import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.*;
 import net.minecraft.world.item.component.BundleContents;
 import net.minecraft.world.level.Level;
+import net.nimbu.scabbards.component.ModDataComponents;
+import net.nimbu.scabbards.component.StoredItem;
 import org.apache.commons.lang3.math.Fraction;
 
 import java.util.List;
@@ -37,39 +37,51 @@ public class ScabbardItem extends Item {
         super(properties);
     }
 
-    public static float getFullnessDisplay(ItemStack stack) {
-        BundleContents bundlecontents = (BundleContents)stack.getOrDefault(DataComponents.BUNDLE_CONTENTS, BundleContents.EMPTY);
-        return bundlecontents.weight().floatValue();
-    }
+//    public static float getFullnessDisplay(ItemStack stack) {
+//        BundleContents bundlecontents = (BundleContents)stack.getOrDefault(DataComponents.BUNDLE_CONTENTS, BundleContents.EMPTY);
+//        return bundlecontents.weight().floatValue();
+//    }
 
+    //Right clicking with item on another inventory item
     public boolean overrideStackedOnOther(ItemStack stack, Slot slot, ClickAction action, Player player) {
-        if (stack.getCount() == 1 && action == ClickAction.SECONDARY) {
-            BundleContents bundlecontents = (BundleContents)stack.get(DataComponents.BUNDLE_CONTENTS);
-            if (bundlecontents == null) {
-                return false;
-            } else {
-                ItemStack itemstack = slot.getItem();
-                BundleContents.Mutable bundlecontents$mutable = new BundleContents.Mutable(bundlecontents);
-                if (itemstack.isEmpty()) {
-                    this.playRemoveOneSound(player);
-                    ItemStack itemstack1 = bundlecontents$mutable.removeOne();
-                    if (itemstack1 != null) {
-                        ItemStack itemstack2 = slot.safeInsert(itemstack1);
-                        bundlecontents$mutable.tryInsert(itemstack2);
-                    }
-                } else if (itemstack.canFitInsideContainerItems()) {
-                    int i = bundlecontents$mutable.tryTransfer(slot, player);
-                    if (i > 0) {
-                        this.playInsertSound(player);
-                    }
-                }
-
-                stack.set(DataComponents.BUNDLE_CONTENTS, bundlecontents$mutable.toImmutable());
-                return true;
-            }
-        } else {
+        if (stack.getCount() != 1 || action != ClickAction.SECONDARY) { //if not an item of count one, clicked with right click
             return false;
         }
+
+        StoredItem storedItem = stack.get(ModDataComponents.STORED_ITEM); //get the sword in the scabbard
+        ItemStack target = slot.getItem(); //get the item in the targeted inventory slot
+
+        if (storedItem == null) { //if no sword in scabbard
+
+            if (!target.is(ItemTags.SWORDS)) {
+                return false;
+            }
+            ItemStack taken = slot.safeTake(1, 1, player);
+            if (!taken.isEmpty()) {
+                stack.set(ModDataComponents.STORED_ITEM, new StoredItem(taken.copy()));
+                this.playInsertSound(player);
+            }
+            return true;
+        }
+
+
+        //Otherwise, if there is an item in the scabbard
+        //TODO: CANCEL IF TARGET IS NOT EMPTY (unless sword)
+        ItemStack storedItemStack = storedItem.stack();
+
+        if (storedItemStack.isEmpty()) {
+            return false;
+        }
+
+        ItemStack remainder = slot.safeInsert(storedItemStack.copy());
+        if (remainder.isEmpty()) {
+            stack.remove(ModDataComponents.STORED_ITEM);
+        } else {
+            stack.set(ModDataComponents.STORED_ITEM, new StoredItem(remainder.copy()));
+        }
+
+        this.playRemoveOneSound(player);
+        return true;
     }
 
     public boolean overrideOtherStackedOnMe(ItemStack stack, ItemStack other, Slot slot, ClickAction action, Player player, SlotAccess access) {
@@ -113,32 +125,32 @@ public class ScabbardItem extends Item {
         }
     }
 
-    public boolean isBarVisible(ItemStack stack) {
-        BundleContents bundlecontents = (BundleContents)stack.getOrDefault(DataComponents.BUNDLE_CONTENTS, BundleContents.EMPTY);
-        return bundlecontents.weight().compareTo(Fraction.ZERO) > 0;
-    }
+//    public boolean isBarVisible(ItemStack stack) {
+//        BundleContents bundlecontents = (BundleContents)stack.getOrDefault(DataComponents.BUNDLE_CONTENTS, BundleContents.EMPTY);
+//        return bundlecontents.weight().compareTo(Fraction.ZERO) > 0;
+//    }
+//
+//    public int getBarWidth(ItemStack stack) {
+//        BundleContents bundlecontents = (BundleContents)stack.getOrDefault(DataComponents.BUNDLE_CONTENTS, BundleContents.EMPTY);
+//        return Math.min(1 + Mth.mulAndTruncate(bundlecontents.weight(), 12), 13);
+//    }
 
-    public int getBarWidth(ItemStack stack) {
-        BundleContents bundlecontents = (BundleContents)stack.getOrDefault(DataComponents.BUNDLE_CONTENTS, BundleContents.EMPTY);
-        return Math.min(1 + Mth.mulAndTruncate(bundlecontents.weight(), 12), 13);
-    }
-
-    public int getBarColor(ItemStack stack) {
-        return BAR_COLOR;
-    }
+//    public int getBarColor(ItemStack stack) {
+//        return BAR_COLOR;
+//    }
 
     private static boolean dropContents(ItemStack stack, Player player) {
-        BundleContents bundlecontents = (BundleContents)stack.get(DataComponents.BUNDLE_CONTENTS);
-        if (bundlecontents != null && !bundlecontents.isEmpty()) {
-            stack.set(DataComponents.BUNDLE_CONTENTS, BundleContents.EMPTY);
+        StoredItem storedItem = stack.get(ModDataComponents.STORED_ITEM);
+        if (storedItem != null && !storedItem.stack().isEmpty()) {
+            ItemStack itemStack = storedItem.stack();
+            stack.remove(ModDataComponents.STORED_ITEM);
             if (player instanceof ServerPlayer) {
-                bundlecontents.itemsCopy().forEach((p_330078_) -> {
-                    player.drop(p_330078_, true);
-                });
+                player.drop(itemStack, true);
             }
-
             return true;
         } else {
+            stack.set(ModDataComponents.STORED_ITEM,
+                    new StoredItem(Items.IRON_SWORD.getDefaultInstance()));
             return false;
         }
     }
