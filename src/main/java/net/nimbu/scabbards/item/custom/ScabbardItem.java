@@ -66,10 +66,10 @@ public class ScabbardItem extends Item {
 
 
         //Otherwise, if there is an item in the scabbard
-        //TODO: CANCEL IF TARGET IS NOT EMPTY (unless sword)
+        //TODO: sword swapping
         ItemStack storedItemStack = storedItem.stack();
 
-        if (storedItemStack.isEmpty()) {
+        if (storedItemStack.isEmpty() || !target.isEmpty()) {
             return false;
         }
 
