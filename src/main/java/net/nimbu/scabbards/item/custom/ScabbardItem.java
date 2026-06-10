@@ -25,24 +25,19 @@ import net.minecraft.world.level.Level;
 import net.nimbu.scabbards.component.ModDataComponents;
 import net.nimbu.scabbards.component.StoredItem;
 import org.apache.commons.lang3.math.Fraction;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Optional;
 
 public class ScabbardItem extends Item implements Equipable{
 
-    private static final int BAR_COLOR = Mth.color(0.4F, 0.4F, 1.0F);
-    private static final int TOOLTIP_MAX_WEIGHT = 64;
-
     public ScabbardItem(Properties properties) {
         super(properties);
     }
 
 
-    //TODO: WHY DOES IT MAKE AUDIO IF ITS EQUIPED AND YOU OPEN INVENTORY
-
-
-    //Right clicking with item on another inventory item
+    //Right-clicking with item on another inventory item
     public boolean overrideStackedOnOther(ItemStack stack, Slot slot, ClickAction action, Player player) {
         if (stack.getCount() != 1 || action != ClickAction.SECONDARY) { //if not an item of count one, clicked with right click
             return false;
@@ -64,7 +59,6 @@ public class ScabbardItem extends Item implements Equipable{
             return true;
         }
 
-
         //Otherwise, if there is an item in the scabbard
         //TODO: sword swapping
         ItemStack storedItemStack = storedItem.stack();
@@ -84,60 +78,23 @@ public class ScabbardItem extends Item implements Equipable{
         return true;
     }
 
+    //Right-clicking with other inventory item on this
     public boolean overrideOtherStackedOnMe(ItemStack stack, ItemStack other, Slot slot, ClickAction action, Player player, SlotAccess access) {
-        if (stack.getCount() != 1) {
-            return false;
-        } else if (action == ClickAction.SECONDARY && slot.allowModification(player)) {
-            BundleContents bundlecontents = (BundleContents)stack.get(DataComponents.BUNDLE_CONTENTS);
-            if (bundlecontents == null) {
-                return false;
-            } else {
-                BundleContents.Mutable bundlecontents$mutable = new BundleContents.Mutable(bundlecontents);
-                if (other.isEmpty()) {
-                    ItemStack itemstack = bundlecontents$mutable.removeOne();
-                    if (itemstack != null) {
-                        this.playRemoveOneSound(player);
-                        access.set(itemstack);
-                    }
-                } else {
-                    int i = bundlecontents$mutable.tryInsert(other);
-                    if (i > 0) {
-                        this.playInsertSound(player);
-                    }
-                }
 
-                stack.set(DataComponents.BUNDLE_CONTENTS, bundlecontents$mutable.toImmutable());
-                return true;
-            }
-        } else {
+        if(!other.is(ItemTags.SWORDS) || other.getCount() != 1 || action != ClickAction.SECONDARY || stack.get(ModDataComponents.STORED_ITEM)!=null){ //if not a sword, who cares
             return false;
         }
+
+        stack.set(ModDataComponents.STORED_ITEM, new StoredItem(other.copy()));
+        access.set(ItemStack.EMPTY);
+
+        this.playInsertSound(player);
+        return true;
     }
 
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand usedHand) {
-        ItemStack itemstack = player.getItemInHand(usedHand);
-        if (dropContents(itemstack, player)) {
-            this.playDropContentsSound(player);
-            player.awardStat(Stats.ITEM_USED.get(this));
-            return InteractionResultHolder.sidedSuccess(itemstack, level.isClientSide());
-        } else {
-            return InteractionResultHolder.fail(itemstack);
-        }
+        return this.swapWithEquipmentSlot(this, level, player, usedHand);
     }
-
-//    public boolean isBarVisible(ItemStack stack) {
-//        BundleContents bundlecontents = (BundleContents)stack.getOrDefault(DataComponents.BUNDLE_CONTENTS, BundleContents.EMPTY);
-//        return bundlecontents.weight().compareTo(Fraction.ZERO) > 0;
-//    }
-//
-//    public int getBarWidth(ItemStack stack) {
-//        BundleContents bundlecontents = (BundleContents)stack.getOrDefault(DataComponents.BUNDLE_CONTENTS, BundleContents.EMPTY);
-//        return Math.min(1 + Mth.mulAndTruncate(bundlecontents.weight(), 12), 13);
-//    }
-
-//    public int getBarColor(ItemStack stack) {
-//        return BAR_COLOR;
-//    }
 
     private static boolean dropContents(ItemStack stack, Player player) {
         StoredItem storedItem = stack.get(ModDataComponents.STORED_ITEM);
@@ -155,26 +112,25 @@ public class ScabbardItem extends Item implements Equipable{
         }
     }
 
+    //Needs work
     public Optional<TooltipComponent> getTooltipImage(ItemStack stack) {
         return !stack.has(DataComponents.HIDE_TOOLTIP) && !stack.has(DataComponents.HIDE_ADDITIONAL_TOOLTIP) ? Optional.ofNullable((BundleContents)stack.get(DataComponents.BUNDLE_CONTENTS)).map(BundleTooltip::new) : Optional.empty();
     }
 
     public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
-        BundleContents bundlecontents = (BundleContents)stack.get(DataComponents.BUNDLE_CONTENTS);
-        if (bundlecontents != null) {
-            int i = Mth.mulAndTruncate(bundlecontents.weight(), 64);
-            tooltipComponents.add(Component.translatable("item.minecraft.bundle.fullness", new Object[]{i, 64}).withStyle(ChatFormatting.GRAY));
-        }
-
+//        BundleContents bundlecontents = (BundleContents)stack.get(DataComponents.BUNDLE_CONTENTS);
+//        if (bundlecontents != null) {
+//            int i = Mth.mulAndTruncate(bundlecontents.weight(), 64);
+//            tooltipComponents.add(Component.translatable("item.minecraft.bundle.fullness", new Object[]{i, 64}).withStyle(ChatFormatting.GRAY));
+//        }
     }
 
     public void onDestroyed(ItemEntity itemEntity) {
-        BundleContents bundlecontents = (BundleContents)itemEntity.getItem().get(DataComponents.BUNDLE_CONTENTS);
-        if (bundlecontents != null) {
-            itemEntity.getItem().set(DataComponents.BUNDLE_CONTENTS, BundleContents.EMPTY);
-            ItemUtils.onContainerDestroyed(itemEntity, bundlecontents.itemsCopy());
-        }
-
+//        BundleContents bundlecontents = (BundleContents)itemEntity.getItem().get(DataComponents.BUNDLE_CONTENTS);
+//        if (bundlecontents != null) {
+//            itemEntity.getItem().set(DataComponents.BUNDLE_CONTENTS, BundleContents.EMPTY);
+//            ItemUtils.onContainerDestroyed(itemEntity, bundlecontents.itemsCopy());
+//        }
     }
 
     private void playRemoveOneSound(Entity entity) {
@@ -190,7 +146,7 @@ public class ScabbardItem extends Item implements Equipable{
     }
 
     @Override
-    public EquipmentSlot getEquipmentSlot() {
+    public @NotNull EquipmentSlot getEquipmentSlot() {
         return EquipmentSlot.LEGS;
     }
 }

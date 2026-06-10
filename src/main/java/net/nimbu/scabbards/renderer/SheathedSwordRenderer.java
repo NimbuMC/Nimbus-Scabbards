@@ -42,54 +42,12 @@ public class SheathedSwordRenderer {
         BakedModel swordModel = itemRenderer.getModel(swordStack, null,null,0);
 
         poseStack.pushPose();
-        swordModel = swordModel.applyTransform(displayContext, poseStack, leftHanded);
+        swordModel.applyTransform(displayContext, poseStack, leftHanded); //i dont know why this line needs to be here but it does
         poseStack.scale(-1.0F, -1.0F, 0.95F);
-        poseStack.translate((float) -8.001 /16, (float) -8.001 /16, (float) -8 /16);
-        VertexConsumer vc = ItemRenderer.getFoilBufferDirect(
-                multiBufferSource,
-                RenderType.entityCutout(swordModel.getParticleIcon().atlasLocation()),
-                false,
-                swordStack.hasFoil()
-        );
-        renderBakedItemModel(swordModel, light, overlay, poseStack, vc);
+        poseStack.translate((float) -0.001 /16, (float) -0.001 /16, (float) -0.0);
+
+        itemRenderer.renderStatic(storedItem.stack(), ItemDisplayContext.NONE, light, overlay, poseStack, multiBufferSource, null, 0);
+
         poseStack.popPose();
-    }
-
-
-    private static void renderBakedItemModel(BakedModel model, int light, int overlay, PoseStack poseStack, VertexConsumer vertices) {
-        RandomSource random = RandomSource.create();
-        long l = 42L;
-
-        for (Direction direction : Direction.values()) {
-            random.setSeed(42L);
-            renderBakedItemQuads(poseStack, vertices, model.getQuads(null, direction, random), light, overlay);
-        }
-
-        random.setSeed(42L);
-        renderBakedItemQuads(poseStack, vertices, model.getQuads(null, null, random), light, overlay);
-    }
-
-    private static void renderBakedItemQuads(
-            PoseStack poseStack,
-            VertexConsumer vertexConsumer,
-            List<BakedQuad> quads,
-            int light,
-            int overlay
-    ) {
-        PoseStack.Pose pose = poseStack.last();
-        for (BakedQuad quad : quads) {
-            float r = 1.0f;
-            float g = 1.0f;
-            float b = 1.0f;
-            float a = 1.0f;
-            vertexConsumer.putBulkData(
-                    pose,
-                    quad,
-                    r, g, b, a,
-                    light,
-                    overlay,
-                    true
-            );
-        }
     }
 }
