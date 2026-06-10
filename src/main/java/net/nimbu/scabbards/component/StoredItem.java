@@ -19,4 +19,11 @@ public record StoredItem(ItemStack stack) {
                     StoredItem::stack,
                     StoredItem::new
             );
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof StoredItem other)) return false;
+        return ItemStack.matches(stack, other.stack);
+    }
 }

@@ -11,6 +11,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.SlotAccess;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
@@ -28,7 +29,7 @@ import org.apache.commons.lang3.math.Fraction;
 import java.util.List;
 import java.util.Optional;
 
-public class ScabbardItem extends Item {
+public class ScabbardItem extends Item implements Equipable{
 
     private static final int BAR_COLOR = Mth.color(0.4F, 0.4F, 1.0F);
     private static final int TOOLTIP_MAX_WEIGHT = 64;
@@ -37,10 +38,9 @@ public class ScabbardItem extends Item {
         super(properties);
     }
 
-//    public static float getFullnessDisplay(ItemStack stack) {
-//        BundleContents bundlecontents = (BundleContents)stack.getOrDefault(DataComponents.BUNDLE_CONTENTS, BundleContents.EMPTY);
-//        return bundlecontents.weight().floatValue();
-//    }
+
+    //TODO: WHY DOES IT MAKE AUDIO IF ITS EQUIPED AND YOU OPEN INVENTORY
+
 
     //Right clicking with item on another inventory item
     public boolean overrideStackedOnOther(ItemStack stack, Slot slot, ClickAction action, Player player) {
@@ -187,5 +187,10 @@ public class ScabbardItem extends Item {
 
     private void playDropContentsSound(Entity entity) {
         entity.playSound(SoundEvents.BUNDLE_DROP_CONTENTS, 0.8F, 0.8F + entity.level().getRandom().nextFloat() * 0.4F);
+    }
+
+    @Override
+    public EquipmentSlot getEquipmentSlot() {
+        return EquipmentSlot.LEGS;
     }
 }

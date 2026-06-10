@@ -22,7 +22,7 @@ public class ItemRendererMixin {
     )
     private void renderMixin(
             ItemStack stack,
-            ItemDisplayContext displayContext,
+            ItemDisplayContext displayContext, //if gui etc
             boolean leftHanded,
             PoseStack poseStack,
             MultiBufferSource buffer,
@@ -33,7 +33,6 @@ public class ItemRendererMixin {
     ) {
         //If rendered item is a scabbard, render sword inside it
         if(stack.is(ModItems.SCABBARD)) {
-            System.out.println("Mixin called");
             SheathedSwordRenderer.renderItem(stack, displayContext, leftHanded, poseStack, buffer, light, overlay, model);
         }
     }
