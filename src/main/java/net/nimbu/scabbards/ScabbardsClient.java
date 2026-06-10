@@ -10,10 +10,13 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.nimbu.scabbards.keybinds.ModKeybinds;
+import net.nimbu.scabbards.networking.ScabbardKeyPressedPayload;
 import net.nimbu.scabbards.renderer.entity.layers.ModModelLayers;
 import net.nimbu.scabbards.renderer.entity.layers.ScabbardLayer;
 import net.nimbu.scabbards.renderer.entity.model.ScabbardModel;
@@ -56,6 +59,14 @@ public class ScabbardsClient {
             playerRenderer.addLayer(
                     new ScabbardLayer(playerRenderer)
             );
+        }
+    }
+
+    @SubscribeEvent
+    public static void onClientTick(ClientTickEvent.Post event) { //detect client input and send to server
+        while (ModKeybinds.SCABBARD_KEY.consumeClick()) {
+
+            PacketDistributor.sendToServer(new ScabbardKeyPressedPayload());
         }
     }
 }

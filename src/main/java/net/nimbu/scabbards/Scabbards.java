@@ -9,6 +9,7 @@ import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.nimbu.scabbards.component.ModDataComponents;
 import net.nimbu.scabbards.item.ModItems;
 import net.nimbu.scabbards.keybinds.ModKeybinds;
+import net.nimbu.scabbards.networking.ModNetworking;
 import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
@@ -51,20 +52,18 @@ public class Scabbards {
 
         modEventBus.addListener(this::registerKeybinds);
 
+        ModKeybinds.register();
+        modEventBus.addListener(ModNetworking::register);
+
         // Register our mod's ModConfigSpec so that FML can create and load the config file for us
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
+
+
     }
 
     private void registerKeybinds(RegisterKeyMappingsEvent event) {
         ModKeybinds.register();
         event.register(ModKeybinds.SCABBARD_KEY);
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    private void onClientTick(ClientTickEvent.Post event) {
-        while (ModKeybinds.SCABBARD_KEY.consumeClick()) {
-
-        }
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {

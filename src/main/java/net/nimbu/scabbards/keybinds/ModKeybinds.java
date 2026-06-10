@@ -12,7 +12,7 @@ public class ModKeybinds {
 
     public static void register() {
         SCABBARD_KEY = new KeyMapping(
-                "key.scabbards.draw_or_sheath_sword",
+                "key.scabbards.scabbard_key",
                 InputConstants.Type.KEYSYM,
                 GLFW.GLFW_KEY_R,
                 CATEGORY

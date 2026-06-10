@@ -30,8 +30,7 @@ public class SheathedSwordRenderer {
             PoseStack poseStack,
             MultiBufferSource multiBufferSource,
             int light,
-            int overlay,
-            BakedModel model
+            int overlay
     ) {
 
 

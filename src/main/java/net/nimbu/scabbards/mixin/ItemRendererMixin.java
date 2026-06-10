@@ -33,7 +33,7 @@ public class ItemRendererMixin {
     ) {
         //If rendered item is a scabbard, render sword inside it
         if(stack.is(ModItems.SCABBARD)) {
-            SheathedSwordRenderer.renderItem(stack, displayContext, leftHanded, poseStack, buffer, light, overlay, model);
+            SheathedSwordRenderer.renderItem(stack, displayContext, leftHanded, poseStack, buffer, light, overlay);
         }
     }
 }

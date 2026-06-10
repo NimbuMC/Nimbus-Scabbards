@@ -5,6 +5,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.util.Mth;
@@ -14,6 +15,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.SlotAccess;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ClickAction;
 import net.minecraft.world.inventory.Slot;
@@ -36,6 +38,67 @@ public class ScabbardItem extends Item implements Equipable{
         super(properties);
     }
 
+    public void drawOrSheathSword(ServerPlayer player, ItemStack scabbardItem){
+
+        Inventory playerInventory = player.getInventory();
+        int selectedSlot=playerInventory.selected;
+        ItemStack heldItem = playerInventory.getItem(selectedSlot).copy(); //store outside of inventory to stop things breaking
+
+        if (scabbardItem.get(ModDataComponents.STORED_ITEM)!=null){ //if sword in scabbard:
+
+            //Remove item from current slot, placing it into inventory
+            playerInventory.setItem(selectedSlot, scabbardItem.get(ModDataComponents.STORED_ITEM).stack());
+            playerInventory.add(heldItem);
+            player.drop(heldItem, false);
+            scabbardItem.remove(ModDataComponents.STORED_ITEM);
+
+            player.level().playSound(
+                    null,
+                    player.getX(), player.getY(), player.getZ(),
+                    SoundEvents.BUNDLE_REMOVE_ONE,
+                    SoundSource.PLAYERS,
+                    1.0F,
+                    1.0F
+            );
+
+        }
+        else //if the scabbard is empty, we add any held sword
+        {
+            if(heldItem.is(ItemTags.SWORDS)){
+                scabbardItem.set(ModDataComponents.STORED_ITEM, new StoredItem(heldItem.copy()));
+                playerInventory.setItem(selectedSlot, ItemStack.EMPTY);
+
+                player.level().playSound(
+                        null,
+                        player.getX(), player.getY(), player.getZ(),
+                        SoundEvents.BUNDLE_INSERT,
+                        SoundSource.PLAYERS,
+                        1.0F,
+                        1.0F
+                );
+            }
+        }
+
+
+
+//        playerInventory.setItem(selectedSlot, ItemStack.EMPTY);
+//        System.out.println(heldItem.toString());
+//        moveOrDrop(player, heldItem);
+//
+//        playerInventory.setItem(selectedSlot,scabbardItem.get(ModDataComponents.STORED_ITEM).stack());
+
+
+
+        //if sword in hand
+    }
+
+    public static void moveOrDrop(ServerPlayer player, ItemStack itemStack){
+        boolean inserted = player.getInventory().add(itemStack);
+        if (inserted) {
+            return;
+        }
+        player.drop(itemStack, false);
+    }
 
     //Right-clicking with item on another inventory item
     public boolean overrideStackedOnOther(ItemStack stack, Slot slot, ClickAction action, Player player) {
