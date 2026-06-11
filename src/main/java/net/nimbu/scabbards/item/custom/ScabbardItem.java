@@ -28,11 +28,13 @@ import net.nimbu.scabbards.component.ModDataComponents;
 import net.nimbu.scabbards.component.StoredItem;
 import org.apache.commons.lang3.math.Fraction;
 import org.jetbrains.annotations.NotNull;
+import top.theillusivec4.curios.api.SlotContext;
+import top.theillusivec4.curios.api.type.capability.ICurioItem;
 
 import java.util.List;
 import java.util.Optional;
 
-public class ScabbardItem extends Item implements Equipable{
+public class ScabbardItem extends Item implements ICurioItem {
 
     public ScabbardItem(Properties properties) {
         super(properties);
@@ -155,8 +157,9 @@ public class ScabbardItem extends Item implements Equipable{
         return true;
     }
 
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand usedHand) {
-        return this.swapWithEquipmentSlot(this, level, player, usedHand);
+    @Override
+    public boolean canEquipFromUse(SlotContext slotContext, ItemStack stack) {
+        return true;
     }
 
     private static boolean dropContents(ItemStack stack, Player player) {
@@ -206,10 +209,5 @@ public class ScabbardItem extends Item implements Equipable{
 
     private void playDropContentsSound(Entity entity) {
         entity.playSound(SoundEvents.BUNDLE_DROP_CONTENTS, 0.8F, 0.8F + entity.level().getRandom().nextFloat() * 0.4F);
-    }
-
-    @Override
-    public @NotNull EquipmentSlot getEquipmentSlot() {
-        return EquipmentSlot.LEGS;
     }
 }

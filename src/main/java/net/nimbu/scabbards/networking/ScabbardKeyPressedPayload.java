@@ -9,7 +9,9 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.nimbu.scabbards.Scabbards;
+import net.nimbu.scabbards.item.ModItems;
 import net.nimbu.scabbards.item.custom.ScabbardItem;
+import top.theillusivec4.curios.api.CuriosApi;
 
 public record ScabbardKeyPressedPayload() implements CustomPacketPayload {
 
@@ -30,10 +32,19 @@ public record ScabbardKeyPressedPayload() implements CustomPacketPayload {
     public static void handle(ScabbardKeyPressedPayload payload, IPayloadContext context) {
         ServerPlayer player = (ServerPlayer) context.player();
 
-        ItemStack itemStack = player.getItemBySlot(EquipmentSlot.LEGS);
+        CuriosApi.getCuriosInventory(player).ifPresent(curios -> {
 
-        if (itemStack.getItem() instanceof ScabbardItem scabbardItem) {
-            scabbardItem.drawOrSheathSword(player, itemStack);
-        }
+            curios.findFirstCurio(ModItems.SCABBARD.get()).ifPresent(slot -> {
+                ItemStack stack = slot.stack();
+
+                if (!stack.isEmpty()) {
+                    if (stack.getItem() instanceof ScabbardItem scabbardItem) {
+                        scabbardItem.drawOrSheathSword(player, stack);
+                    }
+                }
+            });
+        });
+
+
     }
 }

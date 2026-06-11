@@ -50,6 +50,7 @@ public class ScabbardLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
                        AbstractClientPlayer abstractClientPlayer,
                        float v, float v1, float v2, float v3, float v4, float v5) {
 
+
         ItemStack equipStack =
                 abstractClientPlayer.getItemBySlot(EquipmentSlot.LEGS);
 

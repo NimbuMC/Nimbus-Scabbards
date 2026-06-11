@@ -2,14 +2,18 @@ package net.nimbu.scabbards;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.nimbu.scabbards.component.ModDataComponents;
 import net.nimbu.scabbards.item.ModItems;
 import net.nimbu.scabbards.keybinds.ModKeybinds;
 import net.nimbu.scabbards.networking.ModNetworking;
+import net.nimbu.scabbards.renderer.ScabbardRenderer;
 import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
@@ -24,6 +28,10 @@ import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
+import top.theillusivec4.curios.api.CuriosCapability;
+import top.theillusivec4.curios.api.SlotContext;
+import top.theillusivec4.curios.api.client.CuriosRendererRegistry;
+import top.theillusivec4.curios.api.type.capability.ICurio;
 
 // The value here should match an entry in the META-INF/neoforge.mods.toml file
 @Mod(Scabbards.MOD_ID)
@@ -57,8 +65,6 @@ public class Scabbards {
 
         // Register our mod's ModConfigSpec so that FML can create and load the config file for us
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
-
-
     }
 
     private void registerKeybinds(RegisterKeyMappingsEvent event) {

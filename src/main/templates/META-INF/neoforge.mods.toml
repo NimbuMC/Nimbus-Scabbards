@@ -87,6 +87,12 @@ Example mod description.
     versionRange="${minecraft_version_range}"
     ordering="NONE"
     side="BOTH"
+[[dependencies.scabbards]]
+    modId="curios"
+    type="required"
+    versionRange="[9,)"
+    ordering="NONE"
+    side="BOTH"
 
 [[mixins]]
 config = "scabbards.mixins.json"

@@ -4,6 +4,7 @@ import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.client.resources.PlayerSkin;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Items;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
@@ -15,11 +16,14 @@ import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.network.PacketDistributor;
+import net.nimbu.scabbards.item.ModItems;
 import net.nimbu.scabbards.keybinds.ModKeybinds;
 import net.nimbu.scabbards.networking.ScabbardKeyPressedPayload;
+import net.nimbu.scabbards.renderer.ScabbardRenderer;
 import net.nimbu.scabbards.renderer.entity.layers.ModModelLayers;
 import net.nimbu.scabbards.renderer.entity.layers.ScabbardLayer;
 import net.nimbu.scabbards.renderer.entity.model.ScabbardModel;
+import top.theillusivec4.curios.api.client.CuriosRendererRegistry;
 
 // This class will not load on dedicated servers. Accessing client side code from here is safe.
 @Mod(value = Scabbards.MOD_ID, dist = Dist.CLIENT)
@@ -68,6 +72,17 @@ public class ScabbardsClient {
 
             PacketDistributor.sendToServer(new ScabbardKeyPressedPayload());
         }
+    }
+
+    @SubscribeEvent
+    public static void onClientSetup(FMLClientSetupEvent event) {
+        event.enqueueWork(() -> {
+            CuriosRendererRegistry.register(
+                    ModItems.SCABBARD.get(),
+                    ScabbardRenderer::new
+            );
+        });
+
     }
 }
 
