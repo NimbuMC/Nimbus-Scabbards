@@ -1,10 +1,13 @@
 package net.nimbu.scabbards;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.client.resources.PlayerSkin;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.DyedItemColor;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
@@ -21,7 +24,6 @@ import net.nimbu.scabbards.keybinds.ModKeybinds;
 import net.nimbu.scabbards.networking.ScabbardKeyPressedPayload;
 import net.nimbu.scabbards.renderer.ScabbardRenderer;
 import net.nimbu.scabbards.renderer.entity.layers.ModModelLayers;
-import net.nimbu.scabbards.renderer.entity.layers.ScabbardLayer;
 import net.nimbu.scabbards.renderer.entity.model.ScabbardModel;
 import top.theillusivec4.curios.api.client.CuriosRendererRegistry;
 
@@ -45,31 +47,10 @@ public class ScabbardsClient {
         );
     }
 
-    @SubscribeEvent
-    public static void addLayers(EntityRenderersEvent.AddLayers event) {
-        EntityRenderer<? extends Player> renderer =
-                event.getSkin(PlayerSkin.Model.WIDE);
-
-        if (renderer instanceof PlayerRenderer playerRenderer) {
-            playerRenderer.addLayer(
-                    new ScabbardLayer(playerRenderer)
-            );
-        }
-
-        EntityRenderer<? extends Player> slimRenderer =
-                event.getSkin(PlayerSkin.Model.SLIM);
-
-        if (slimRenderer instanceof PlayerRenderer playerRenderer) {
-            playerRenderer.addLayer(
-                    new ScabbardLayer(playerRenderer)
-            );
-        }
-    }
 
     @SubscribeEvent
     public static void onClientTick(ClientTickEvent.Post event) { //detect client input and send to server
         while (ModKeybinds.SCABBARD_KEY.consumeClick()) {
-
             PacketDistributor.sendToServer(new ScabbardKeyPressedPayload());
         }
     }
@@ -80,6 +61,23 @@ public class ScabbardsClient {
             CuriosRendererRegistry.register(
                     ModItems.SCABBARD.get(),
                     ScabbardRenderer::new
+            );
+
+
+            Minecraft minecraft = Minecraft.getInstance();
+
+            minecraft.getItemColors().register(
+                    (stack, tintIndex) -> {
+                        if (tintIndex == 0) {
+                            return 0xFF000000 | //ORs in the alpha value
+                                    stack.getOrDefault(
+                                    DataComponents.DYED_COLOR,
+                                    new DyedItemColor(0xd37d19, false)
+                            ).rgb();
+                        }
+                        return 0xFFFFFFFF;
+                    },
+                    ModItems.SCABBARD.get()
             );
         });
 

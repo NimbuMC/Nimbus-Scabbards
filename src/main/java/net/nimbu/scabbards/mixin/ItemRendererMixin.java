@@ -7,6 +7,7 @@ import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.nimbu.scabbards.item.ModItems;
+import net.nimbu.scabbards.renderer.ScabbardRenderer;
 import net.nimbu.scabbards.renderer.SheathedSwordRenderer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -18,11 +19,12 @@ public class ItemRendererMixin {
 
     @Inject(
             method = "render",
-            at = @At("TAIL")
+            at = @At("HEAD"),
+            cancellable = true
     )
-    private void renderMixin(
+    private void renderHeldScabbardMixin(
             ItemStack stack,
-            ItemDisplayContext displayContext, //if gui etc
+            ItemDisplayContext displayContext,
             boolean leftHanded,
             PoseStack poseStack,
             MultiBufferSource buffer,
@@ -31,8 +33,13 @@ public class ItemRendererMixin {
             BakedModel model,
             CallbackInfo ci
     ) {
-        //If rendered item is a scabbard, render sword inside it
-        if(stack.is(ModItems.SCABBARD)) {
+        if (stack.is(ModItems.SCABBARD.get())) {
+//            switch (displayContext){
+//                case FIRST_PERSON_LEFT_HAND, FIRST_PERSON_RIGHT_HAND, THIRD_PERSON_LEFT_HAND, THIRD_PERSON_RIGHT_HAND ->{ //render the 3d model instead in hand
+//                    //render the model.... if i can be bothered
+//                    ci.cancel(); //cancel regular rendering
+//                }
+//            }
             SheathedSwordRenderer.renderItem(stack, displayContext, leftHanded, poseStack, buffer, light, overlay);
         }
     }

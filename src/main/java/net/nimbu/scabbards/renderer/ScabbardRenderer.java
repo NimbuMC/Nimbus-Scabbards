@@ -11,12 +11,14 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.DyedItemColor;
 import net.nimbu.scabbards.Scabbards;
 import net.nimbu.scabbards.item.ModItems;
 import net.nimbu.scabbards.renderer.entity.model.ScabbardModel;
@@ -36,8 +38,6 @@ public class ScabbardRenderer implements ICurioRenderer {
                                 "main"
                         ))
         );
-
-        System.out.println("SCABBARD RENDERER REGISTERED");
     }
 
     @Override
@@ -93,10 +93,24 @@ public class ScabbardRenderer implements ICurioRenderer {
         poseStack.mulPose(Axis.ZP.rotationDegrees(45));
 
         VertexConsumer vc = renderTypeBuffer.getBuffer(RenderType.entityCutout(
-                ResourceLocation.fromNamespaceAndPath(Scabbards.MOD_ID, "textures/entity/scabbard_layer.png")
+                ResourceLocation.fromNamespaceAndPath(Scabbards.MOD_ID, "textures/entity/scabbard_layer_0.png")
         ));
 
-        model.render(poseStack, vc, packedLight);
+        int color = stack.getOrDefault(
+                DataComponents.DYED_COLOR,
+                new DyedItemColor(0xd37d19, false)).rgb();
+        model.render(poseStack, vc, packedLight, color);
+
+        VertexConsumer overlayVc = renderTypeBuffer.getBuffer(
+                RenderType.entityCutout(
+                        ResourceLocation.fromNamespaceAndPath(
+                                Scabbards.MOD_ID,
+                                "textures/entity/scabbard_layer_1.png"
+                        )
+                )
+        );
+
+        model.render(poseStack, overlayVc, packedLight, 0xFFFFFFFF);
 
         poseStack.popPose();
 

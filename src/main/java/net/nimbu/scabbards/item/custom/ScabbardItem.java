@@ -41,7 +41,6 @@ public class ScabbardItem extends Item implements ICurioItem {
     }
 
     public void drawOrSheathSword(ServerPlayer player, ItemStack scabbardItem){
-
         Inventory playerInventory = player.getInventory();
         int selectedSlot=playerInventory.selected;
         ItemStack heldItem = playerInventory.getItem(selectedSlot).copy(); //store outside of inventory to stop things breaking

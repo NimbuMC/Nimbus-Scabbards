@@ -33,7 +33,7 @@ public class ScabbardModel {
         return LayerDefinition.create(mesh, 16, 16);
     }
 
-    public void render(PoseStack poseStack, VertexConsumer buffer, int light) {
-        root.getChild("scabbard").render(poseStack, buffer, light, OverlayTexture.NO_OVERLAY);
+    public void render(PoseStack poseStack, VertexConsumer buffer, int light, int color) {
+        root.getChild("scabbard").render(poseStack, buffer, light, OverlayTexture.NO_OVERLAY, 0xFF000000 | color);
     }
 }
