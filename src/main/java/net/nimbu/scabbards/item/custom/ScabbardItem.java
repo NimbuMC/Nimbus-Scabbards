@@ -1,20 +1,15 @@
 package net.nimbu.scabbards.item.custom;
 
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.stats.Stats;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.util.Mth;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.SlotAccess;
-import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ClickAction;
@@ -23,11 +18,8 @@ import net.minecraft.world.inventory.tooltip.BundleTooltip;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.component.BundleContents;
-import net.minecraft.world.level.Level;
 import net.nimbu.scabbards.component.ModDataComponents;
 import net.nimbu.scabbards.component.StoredItem;
-import org.apache.commons.lang3.math.Fraction;
-import org.jetbrains.annotations.NotNull;
 import top.theillusivec4.curios.api.SlotContext;
 import top.theillusivec4.curios.api.type.capability.ICurioItem;
 
@@ -79,26 +71,6 @@ public class ScabbardItem extends Item implements ICurioItem {
                 );
             }
         }
-
-
-
-//        playerInventory.setItem(selectedSlot, ItemStack.EMPTY);
-//        System.out.println(heldItem.toString());
-//        moveOrDrop(player, heldItem);
-//
-//        playerInventory.setItem(selectedSlot,scabbardItem.get(ModDataComponents.STORED_ITEM).stack());
-
-
-
-        //if sword in hand
-    }
-
-    public static void moveOrDrop(ServerPlayer player, ItemStack itemStack){
-        boolean inserted = player.getInventory().add(itemStack);
-        if (inserted) {
-            return;
-        }
-        player.drop(itemStack, false);
     }
 
     //Right-clicking with item on another inventory item
@@ -124,7 +96,6 @@ public class ScabbardItem extends Item implements ICurioItem {
         }
 
         //Otherwise, if there is an item in the scabbard
-        //TODO: sword swapping
         ItemStack storedItemStack = storedItem.stack();
 
         if (storedItemStack.isEmpty() || !target.isEmpty()) {
@@ -138,7 +109,7 @@ public class ScabbardItem extends Item implements ICurioItem {
             stack.set(ModDataComponents.STORED_ITEM, new StoredItem(remainder.copy()));
         }
 
-        this.playRemoveOneSound(player);
+        this.playRemoveSound(player);
         return true;
     }
 
@@ -161,21 +132,21 @@ public class ScabbardItem extends Item implements ICurioItem {
         return true;
     }
 
-    private static boolean dropContents(ItemStack stack, Player player) {
-        StoredItem storedItem = stack.get(ModDataComponents.STORED_ITEM);
-        if (storedItem != null && !storedItem.stack().isEmpty()) {
-            ItemStack itemStack = storedItem.stack();
-            stack.remove(ModDataComponents.STORED_ITEM);
-            if (player instanceof ServerPlayer) {
-                player.drop(itemStack, true);
-            }
-            return true;
-        } else {
-            stack.set(ModDataComponents.STORED_ITEM,
-                    new StoredItem(Items.IRON_SWORD.getDefaultInstance()));
-            return false;
-        }
-    }
+//    private static boolean dropContents(ItemStack stack, Player player) {
+//        StoredItem storedItem = stack.get(ModDataComponents.STORED_ITEM);
+//        if (storedItem != null && !storedItem.stack().isEmpty()) {
+//            ItemStack itemStack = storedItem.stack();
+//            stack.remove(ModDataComponents.STORED_ITEM);
+//            if (player instanceof ServerPlayer) {
+//                player.drop(itemStack, true);
+//            }
+//            return true;
+//        } else {
+//            stack.set(ModDataComponents.STORED_ITEM,
+//                    new StoredItem(Items.IRON_SWORD.getDefaultInstance()));
+//            return false;
+//        }
+//    }
 
     //Needs work
     public Optional<TooltipComponent> getTooltipImage(ItemStack stack) {
@@ -183,22 +154,31 @@ public class ScabbardItem extends Item implements ICurioItem {
     }
 
     public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
-//        BundleContents bundlecontents = (BundleContents)stack.get(DataComponents.BUNDLE_CONTENTS);
-//        if (bundlecontents != null) {
-//            int i = Mth.mulAndTruncate(bundlecontents.weight(), 64);
-//            tooltipComponents.add(Component.translatable("item.minecraft.bundle.fullness", new Object[]{i, 64}).withStyle(ChatFormatting.GRAY));
-//        }
+
+        Player player = Minecraft.getInstance().player;
+
+        StoredItem storedItem;
+        if ((storedItem = stack.get(ModDataComponents.STORED_ITEM))!=null) {
+            ItemStack storedItemStack = storedItem.stack();
+            List<Component> storedItemTooltip = storedItemStack.getTooltipLines(context, player, tooltipFlag);
+            tooltipComponents.add(Component.empty());
+            tooltipComponents.add(Component.translatable("tooltip.scabbards.stored_sword").withStyle(ChatFormatting.GOLD));
+            for (Component component : storedItemTooltip) {
+                tooltipComponents.add(Component.literal("  ")
+                        .append(component));
+            }
+        }
     }
 
-    public void onDestroyed(ItemEntity itemEntity) {
+//    public void onDestroyed(ItemEntity itemEntity) {
 //        BundleContents bundlecontents = (BundleContents)itemEntity.getItem().get(DataComponents.BUNDLE_CONTENTS);
 //        if (bundlecontents != null) {
 //            itemEntity.getItem().set(DataComponents.BUNDLE_CONTENTS, BundleContents.EMPTY);
 //            ItemUtils.onContainerDestroyed(itemEntity, bundlecontents.itemsCopy());
 //        }
-    }
+//    }
 
-    private void playRemoveOneSound(Entity entity) {
+    private void playRemoveSound(Entity entity) {
         entity.playSound(SoundEvents.BUNDLE_REMOVE_ONE, 0.8F, 0.8F + entity.level().getRandom().nextFloat() * 0.4F);
     }
 
@@ -206,7 +186,7 @@ public class ScabbardItem extends Item implements ICurioItem {
         entity.playSound(SoundEvents.BUNDLE_INSERT, 0.8F, 0.8F + entity.level().getRandom().nextFloat() * 0.4F);
     }
 
-    private void playDropContentsSound(Entity entity) {
-        entity.playSound(SoundEvents.BUNDLE_DROP_CONTENTS, 0.8F, 0.8F + entity.level().getRandom().nextFloat() * 0.4F);
-    }
+//    private void playDropContentsSound(Entity entity) {
+//        entity.playSound(SoundEvents.BUNDLE_DROP_CONTENTS, 0.8F, 0.8F + entity.level().getRandom().nextFloat() * 0.4F);
+//    }
 }
