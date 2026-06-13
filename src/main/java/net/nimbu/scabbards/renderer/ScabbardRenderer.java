@@ -77,7 +77,7 @@ public class ScabbardRenderer implements ICurioRenderer {
 
         poseStack.mulPose(Axis.ZP.rotationDegrees(135));
         poseStack.mulPose(Axis.YP.rotationDegrees(-90));
-        poseStack.mulPose(Axis.XP.rotationDegrees(-10));
+        poseStack.mulPose(Axis.XP.rotationDegrees(-11));
 
         SheathedSwordRenderer.renderItem(
                 stack,
