@@ -1,12 +1,7 @@
 package net.nimbu.scabbards;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.entity.EntityRenderer;
-import net.minecraft.client.renderer.entity.player.PlayerRenderer;
-import net.minecraft.client.resources.PlayerSkin;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.DyedItemColor;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -25,6 +20,7 @@ import net.nimbu.scabbards.networking.ScabbardKeyPressedPayload;
 import net.nimbu.scabbards.renderer.ScabbardRenderer;
 import net.nimbu.scabbards.renderer.entity.layers.ModModelLayers;
 import net.nimbu.scabbards.renderer.entity.model.ScabbardModel;
+import net.nimbu.scabbards.renderer.entity.model.WeaponHolsterModel;
 import top.theillusivec4.curios.api.client.CuriosRendererRegistry;
 
 // This class will not load on dedicated servers. Accessing client side code from here is safe.
@@ -45,6 +41,10 @@ public class ScabbardsClient {
                 ModModelLayers.SCABBARD_LAYER,
                 ScabbardModel::createBodyLayer
         );
+        event.registerLayerDefinition(
+                ModModelLayers.WEAPON_HOLSTER_LAYER,
+                WeaponHolsterModel::createBodyLayer
+        );
     }
 
 
@@ -60,7 +60,11 @@ public class ScabbardsClient {
         event.enqueueWork(() -> {
             CuriosRendererRegistry.register(
                     ModItems.SCABBARD.get(),
-                    ScabbardRenderer::new
+                    () -> new ScabbardRenderer(0)
+            );
+            CuriosRendererRegistry.register(
+                    ModItems.WEAPON_HOlSTER.get(),
+                    () -> new ScabbardRenderer(1)
             );
 
 
@@ -78,6 +82,19 @@ public class ScabbardsClient {
                         return 0xFFFFFFFF;
                     },
                     ModItems.SCABBARD.get()
+            );
+            minecraft.getItemColors().register(
+                    (stack, tintIndex) -> {
+                        if (tintIndex == 0) {
+                            return 0xFF000000 | //ORs in the alpha value
+                                    stack.getOrDefault(
+                                            DataComponents.DYED_COLOR,
+                                            new DyedItemColor(0xd37d19, false)
+                                    ).rgb();
+                        }
+                        return 0xFFFFFFFF;
+                    },
+                    ModItems.WEAPON_HOlSTER.get()
             );
         });
 

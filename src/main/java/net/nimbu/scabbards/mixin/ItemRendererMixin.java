@@ -33,14 +33,8 @@ public class ItemRendererMixin {
             BakedModel model,
             CallbackInfo ci
     ) {
-        if (stack.is(ModItems.SCABBARD.get())) {
-//            switch (displayContext){
-//                case FIRST_PERSON_LEFT_HAND, FIRST_PERSON_RIGHT_HAND, THIRD_PERSON_LEFT_HAND, THIRD_PERSON_RIGHT_HAND ->{ //render the 3d model instead in hand
-//                    //render the model.... if i can be bothered
-//                    ci.cancel(); //cancel regular rendering
-//                }
-//            }
-            SheathedSwordRenderer.renderItem(stack, displayContext, leftHanded, poseStack, buffer, light, overlay);
+        if (stack.is(ModItems.SCABBARD.get()) || stack.is(ModItems.WEAPON_HOlSTER.get())) {
+            SheathedSwordRenderer.renderItem(stack, displayContext, leftHanded, poseStack, buffer, light, overlay, false);
         }
     }
 }

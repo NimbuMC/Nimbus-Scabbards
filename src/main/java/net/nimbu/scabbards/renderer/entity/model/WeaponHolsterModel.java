@@ -10,11 +10,11 @@ import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 
-public class ScabbardModel extends AbstractScabbardModel {
+public class WeaponHolsterModel extends AbstractScabbardModel{
 
     private final ModelPart root;
 
-    public ScabbardModel(ModelPart root){
+    public WeaponHolsterModel(ModelPart root){
         super(root);
         this.root = root;
     }
@@ -24,10 +24,10 @@ public class ScabbardModel extends AbstractScabbardModel {
         PartDefinition root = mesh.getRoot();
 
         root.addOrReplaceChild(
-                "scabbard",
+                "weapon_holster",
                 CubeListBuilder.create()
                         .texOffs(0, 0)
-                        .addBox(-1.0F, 0.0F, -2.5F, 5.0F, 12.0F, 1.0F),
+                        .addBox(-1.0F, 0.0F, -2.5F, 5.0F, 3.0F, 1.0F),
                 PartPose.ZERO
         );
 
@@ -35,6 +35,6 @@ public class ScabbardModel extends AbstractScabbardModel {
     }
 
     public void render(PoseStack poseStack, VertexConsumer buffer, int light, int color) {
-        root.getChild("scabbard").render(poseStack, buffer, light, OverlayTexture.NO_OVERLAY, 0xFF000000 | color);
+        root.getChild("weapon_holster").render(poseStack, buffer, light, OverlayTexture.NO_OVERLAY, 0xFF000000 | color);
     }
 }

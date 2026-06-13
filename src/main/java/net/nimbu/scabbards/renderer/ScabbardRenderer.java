@@ -9,10 +9,8 @@ import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -22,26 +20,46 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.DyedItemColor;
 import net.nimbu.scabbards.Scabbards;
-import net.nimbu.scabbards.component.ModDataComponents;
-import net.nimbu.scabbards.component.StoredItem;
-import net.nimbu.scabbards.item.ModItems;
+import net.nimbu.scabbards.renderer.entity.model.AbstractScabbardModel;
 import net.nimbu.scabbards.renderer.entity.model.ScabbardModel;
+import net.nimbu.scabbards.renderer.entity.model.WeaponHolsterModel;
 import top.theillusivec4.curios.api.SlotContext;
 import top.theillusivec4.curios.api.client.ICurioRenderer;
 
 public class ScabbardRenderer implements ICurioRenderer {
 
-    private final ScabbardModel model;
+    private final AbstractScabbardModel MODEL;
+    private final ResourceLocation TEXTURE;
+    private final ResourceLocation OVERLAY_TEXTURE;
 
-    public ScabbardRenderer() {
-        this.model = new ScabbardModel(
-                Minecraft.getInstance()
-                        .getEntityModels()
-                        .bakeLayer(new ModelLayerLocation(
-                                ResourceLocation.fromNamespaceAndPath(Scabbards.MOD_ID, "scabbard"),
-                                "main"
-                        ))
-        );
+    public ScabbardRenderer(int type) {
+        switch (type){
+            case 0:
+                this.MODEL = new ScabbardModel(
+                        Minecraft.getInstance()
+                                .getEntityModels()
+                                .bakeLayer(new ModelLayerLocation(
+                                        ResourceLocation.fromNamespaceAndPath(Scabbards.MOD_ID, "scabbard"),
+                                        "main"
+                                ))
+                );
+                TEXTURE = ResourceLocation.fromNamespaceAndPath(Scabbards.MOD_ID, "textures/entity/scabbard_layer_0.png");
+                OVERLAY_TEXTURE = ResourceLocation.fromNamespaceAndPath(Scabbards.MOD_ID, "textures/entity/scabbard_layer_1.png");
+                break;
+            case 1:
+            default:
+                this.MODEL = new WeaponHolsterModel(
+                        Minecraft.getInstance()
+                                .getEntityModels()
+                                .bakeLayer(new ModelLayerLocation(
+                                        ResourceLocation.fromNamespaceAndPath(Scabbards.MOD_ID, "weapon_holster"),
+                                        "main"
+                                ))
+                );
+                TEXTURE = ResourceLocation.fromNamespaceAndPath(Scabbards.MOD_ID, "textures/entity/weapon_holster_layer.png");
+                OVERLAY_TEXTURE = null;
+                break;
+        }
     }
 
     @Override
@@ -67,6 +85,10 @@ public class ScabbardRenderer implements ICurioRenderer {
             armourDepth = 0.05f;
         }
 
+
+
+        //------------Sword rendering:------------
+
         poseStack.pushPose();
 
         //position relative to player body
@@ -86,9 +108,14 @@ public class ScabbardRenderer implements ICurioRenderer {
                 poseStack,
                 renderTypeBuffer,
                 packedLight,
-                OverlayTexture.NO_OVERLAY
+                OverlayTexture.NO_OVERLAY,
+                true
         );
         poseStack.popPose();
+
+
+
+        //------------Scabbard rendering:------------
 
         poseStack.pushPose();
 
@@ -99,27 +126,23 @@ public class ScabbardRenderer implements ICurioRenderer {
         poseStack.mulPose(Axis.YP.rotationDegrees(180));
         poseStack.mulPose(Axis.ZP.rotationDegrees(45));
 
+        //--Main--
         VertexConsumer vc = renderTypeBuffer.getBuffer(RenderType.entityCutout(
-                ResourceLocation.fromNamespaceAndPath(Scabbards.MOD_ID, "textures/entity/scabbard_layer_0.png")
+                TEXTURE
         ));
-
         int color = stack.getOrDefault(
                 DataComponents.DYED_COLOR,
                 new DyedItemColor(0xd37d19, false)).rgb();
-        model.render(poseStack, vc, packedLight, color);
+        MODEL.render(poseStack, vc, packedLight, color);
 
-        VertexConsumer overlayVc = renderTypeBuffer.getBuffer(
-                RenderType.entityCutout(
-                        ResourceLocation.fromNamespaceAndPath(
-                                Scabbards.MOD_ID,
-                                "textures/entity/scabbard_layer_1.png"
-                        )
-                )
-        );
-
-        model.render(poseStack, overlayVc, packedLight, 0xFFFFFFFF);
+        //--Overlay--
+        if (OVERLAY_TEXTURE !=null) {
+            VertexConsumer overlayVc = renderTypeBuffer.getBuffer(RenderType.entityCutout(
+                    OVERLAY_TEXTURE
+            ));
+            MODEL.render(poseStack, overlayVc, packedLight, 0xFFFFFFFF);
+        }
 
         poseStack.popPose();
-
     }
 }

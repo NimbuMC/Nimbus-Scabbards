@@ -13,6 +13,9 @@ public class ModItems {
     public static final DeferredItem<Item> SCABBARD = ITEMS.register("scabbard",
             () -> new ScabbardItem(new Item.Properties().stacksTo(1)));
 
+    public static final DeferredItem<Item> WEAPON_HOlSTER = ITEMS.register("weapon_holster",
+            () -> new ScabbardItem(new Item.Properties().stacksTo(1)));
+
     public static void register(IEventBus eventBus){
         ITEMS.register(eventBus);
     }

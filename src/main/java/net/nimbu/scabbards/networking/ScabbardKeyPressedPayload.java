@@ -5,7 +5,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.nimbu.scabbards.Scabbards;
@@ -34,15 +34,24 @@ public record ScabbardKeyPressedPayload() implements CustomPacketPayload {
 
         CuriosApi.getCuriosInventory(player).ifPresent(curios -> {
 
-            curios.findFirstCurio(ModItems.SCABBARD.get()).ifPresent(slot -> {
-                ItemStack stack = slot.stack();
 
-                if (!stack.isEmpty()) {
-                    if (stack.getItem() instanceof ScabbardItem scabbardItem) {
-                        scabbardItem.drawOrSheathSword(player, stack);
+            Item[] items = {
+                    ModItems.SCABBARD.get(),
+                    ModItems.WEAPON_HOlSTER.get()
+            };
+
+            for (Item item : items) {
+                curios.findFirstCurio(item).ifPresent(slot -> {
+                    ItemStack stack = slot.stack();
+                    if (!stack.isEmpty()) {
+                        if (stack.getItem() instanceof ScabbardItem scabbardItem) {
+                            scabbardItem.drawOrSheathSword(player, stack);
+                        }
                     }
-                }
-            });
+                });
+            }
+
+
         });
 
 

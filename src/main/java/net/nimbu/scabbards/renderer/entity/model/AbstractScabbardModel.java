@@ -10,12 +10,10 @@ import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 
-public class ScabbardModel extends AbstractScabbardModel {
-
+public class AbstractScabbardModel {
     private final ModelPart root;
 
-    public ScabbardModel(ModelPart root){
-        super(root);
+    public AbstractScabbardModel(ModelPart root){
         this.root = root;
     }
 
