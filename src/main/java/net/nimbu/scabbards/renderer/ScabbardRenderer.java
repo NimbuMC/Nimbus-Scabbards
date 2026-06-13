@@ -9,8 +9,10 @@ import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -20,6 +22,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.DyedItemColor;
 import net.nimbu.scabbards.Scabbards;
+import net.nimbu.scabbards.component.ModDataComponents;
+import net.nimbu.scabbards.component.StoredItem;
 import net.nimbu.scabbards.item.ModItems;
 import net.nimbu.scabbards.renderer.entity.model.ScabbardModel;
 import top.theillusivec4.curios.api.SlotContext;
@@ -68,13 +72,16 @@ public class ScabbardRenderer implements ICurioRenderer {
         //position relative to player body
         ((PlayerModel<?>) renderLayerParent.getModel()).body.translateAndRotate(poseStack);
 
-        poseStack.translate(-0.12, 0.18, 0.15+armourDepth);
+        poseStack.translate(-0.35, 0.05, 0.15+armourDepth);
         poseStack.scale(0.9375F, 0.9375F, 0.9375F);
-        poseStack.mulPose(Axis.ZP.rotationDegrees(180));
+
+        poseStack.mulPose(Axis.ZP.rotationDegrees(135));
+        poseStack.mulPose(Axis.YP.rotationDegrees(-90));
+        poseStack.mulPose(Axis.XP.rotationDegrees(-10));
 
         SheathedSwordRenderer.renderItem(
                 stack,
-                ItemDisplayContext.NONE,
+                ItemDisplayContext.THIRD_PERSON_RIGHT_HAND, //switch to using this version of rendering for more compatibility with other mods. a ball ache, but necessary
                 false,
                 poseStack,
                 renderTypeBuffer,

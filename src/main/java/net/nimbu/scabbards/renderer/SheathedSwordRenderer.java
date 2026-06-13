@@ -37,15 +37,11 @@ public class SheathedSwordRenderer {
         ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
         StoredItem storedItem = stack.get(ModDataComponents.STORED_ITEM);
         if (storedItem==null) {return;}
-        ItemStack swordStack = storedItem.stack();
-        BakedModel swordModel = itemRenderer.getModel(swordStack, null,null,0);
-
         poseStack.pushPose();
-        swordModel.applyTransform(displayContext, poseStack, leftHanded); //i dont know why this line needs to be here but it does
         poseStack.scale(-1.0F, -1.0F, 0.95F);
         poseStack.translate((float) -0.001 /16, (float) -0.001 /16, (float) -0.0);
 
-        itemRenderer.renderStatic(storedItem.stack(), ItemDisplayContext.NONE, light, overlay, poseStack, multiBufferSource, null, 0);
+        itemRenderer.renderStatic(storedItem.stack(), displayContext, light, overlay, poseStack, multiBufferSource, null, 0);
 
         poseStack.popPose();
     }
