@@ -9,7 +9,9 @@ import net.nimbu.scabbards.Scabbards;
 public class ModTags {
 
 
-    public static final TagKey<Item> SCABBARD_ITEMS = createTag("scabbard");
+    //public static final TagKey<Item> SCABBARD_ITEMS = createTag("scabbard");
+
+    public static final TagKey<Item> TOOLS = createTag("tools");
 
     private static TagKey<Item> createTag(String name) {
         return ItemTags.create(ResourceLocation.fromNamespaceAndPath(Scabbards.MOD_ID, name));

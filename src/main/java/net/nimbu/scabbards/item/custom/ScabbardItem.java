@@ -7,7 +7,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.tags.ItemTags;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.SlotAccess;
 import net.minecraft.world.entity.player.Inventory;
@@ -28,8 +28,11 @@ import java.util.Optional;
 
 public class ScabbardItem extends Item implements ICurioItem {
 
-    public ScabbardItem(Properties properties) {
+    private final TagKey<Item> item_type;
+
+    public ScabbardItem(Properties properties, TagKey<Item> item_type) {
         super(properties);
+        this.item_type =item_type;
     }
 
     public void drawOrSheathSword(ServerPlayer player, ItemStack scabbardItem){
@@ -57,7 +60,7 @@ public class ScabbardItem extends Item implements ICurioItem {
         }
         else //if the scabbard is empty, we add any held sword
         {
-            if(heldItem.is(ItemTags.SWORDS)){
+            if(heldItem.is(this.item_type)){
                 scabbardItem.set(ModDataComponents.STORED_ITEM, new StoredItem(heldItem.copy()));
                 playerInventory.setItem(selectedSlot, ItemStack.EMPTY);
 
@@ -84,7 +87,7 @@ public class ScabbardItem extends Item implements ICurioItem {
 
         if (storedItem == null) { //if no sword in scabbard
 
-            if (!target.is(ItemTags.SWORDS)) {
+            if (!target.is(this.item_type)) {
                 return false;
             }
             ItemStack taken = slot.safeTake(1, 1, player);
@@ -116,7 +119,7 @@ public class ScabbardItem extends Item implements ICurioItem {
     //Right-clicking with other inventory item on this
     public boolean overrideOtherStackedOnMe(ItemStack stack, ItemStack other, Slot slot, ClickAction action, Player player, SlotAccess access) {
 
-        if(!other.is(ItemTags.SWORDS) || other.getCount() != 1 || action != ClickAction.SECONDARY || stack.get(ModDataComponents.STORED_ITEM)!=null){ //if not a sword, who cares
+        if(!other.is(this.item_type) || other.getCount() != 1 || action != ClickAction.SECONDARY || stack.get(ModDataComponents.STORED_ITEM)!=null){ //if not a sword, who cares
             return false;
         }
 
@@ -153,7 +156,7 @@ public class ScabbardItem extends Item implements ICurioItem {
         return !stack.has(DataComponents.HIDE_TOOLTIP) && !stack.has(DataComponents.HIDE_ADDITIONAL_TOOLTIP) ? Optional.ofNullable((BundleContents)stack.get(DataComponents.BUNDLE_CONTENTS)).map(BundleTooltip::new) : Optional.empty();
     }
 
-    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
+    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
 
         Player player = Minecraft.getInstance().player;
 
