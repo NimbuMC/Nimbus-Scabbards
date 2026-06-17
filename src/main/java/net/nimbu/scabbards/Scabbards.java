@@ -1,7 +1,10 @@
 package net.nimbu.scabbards;
 
+import net.neoforged.fml.event.config.ModConfigEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.nimbu.scabbards.component.ModDataComponents;
+import net.nimbu.scabbards.config.ScabbardConfig;
+import net.nimbu.scabbards.config.ScabbardItemCache;
 import net.nimbu.scabbards.item.ModItems;
 import net.nimbu.scabbards.keybinds.ModKeybinds;
 import net.nimbu.scabbards.networking.ModNetworking;
@@ -44,11 +47,13 @@ public class Scabbards {
 
         modEventBus.addListener(this::registerKeybinds);
 
+        modEventBus.addListener(this::onConfigReload);
+        modContainer.registerConfig(ModConfig.Type.SERVER, ScabbardConfig.SPEC);
+
         ModKeybinds.register();
         modEventBus.addListener(ModNetworking::register);
 
-        // Register our mod's ModConfigSpec so that FML can create and load the config file for us
-        modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
+
     }
 
     private void registerKeybinds(RegisterKeyMappingsEvent event) {
@@ -70,6 +75,10 @@ public class Scabbards {
     // You can use SubscribeEvent and let the Event Bus discover methods to call
     @SubscribeEvent
     public void onServerStarting(ServerStartingEvent event) {
+        ScabbardItemCache.reload(); //set up cache
+    }
 
+    private void onConfigReload(ModConfigEvent.Reloading event) {
+        ScabbardItemCache.reload();
     }
 }

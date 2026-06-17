@@ -20,6 +20,7 @@ import net.minecraft.world.item.*;
 import net.minecraft.world.item.component.BundleContents;
 import net.nimbu.scabbards.component.ModDataComponents;
 import net.nimbu.scabbards.component.StoredItem;
+import net.nimbu.scabbards.config.ScabbardItemCache;
 import top.theillusivec4.curios.api.SlotContext;
 import top.theillusivec4.curios.api.type.capability.ICurioItem;
 
@@ -28,11 +29,20 @@ import java.util.Optional;
 
 public class ScabbardItem extends Item implements ICurioItem {
 
-    private final TagKey<Item> item_type;
+    private final Class<? extends Item> item_type;
 
-    public ScabbardItem(Properties properties, TagKey<Item> item_type) {
+    public ScabbardItem(Properties properties, Class<? extends Item> item_type) {
         super(properties);
         this.item_type =item_type;
+    }
+
+    public static boolean matches(ItemStack stack, Class<? extends Item> type) {
+        if (stack == null || stack.isEmpty() || type == null) {
+            return false;
+        }
+
+        return type.isInstance(stack.getItem()) || ScabbardItemCache.isScabbardExtra(stack.getItem())
+                || ScabbardItemCache.isWeaponHolsterExtra(stack.getItem());
     }
 
     public void drawOrSheathSword(ServerPlayer player, ItemStack scabbardItem){
@@ -60,7 +70,7 @@ public class ScabbardItem extends Item implements ICurioItem {
         }
         else //if the scabbard is empty, we add any held sword
         {
-            if(heldItem.is(this.item_type)){
+            if(matches(heldItem, item_type)){  //.is(this.item_type)){
                 scabbardItem.set(ModDataComponents.STORED_ITEM, new StoredItem(heldItem.copy()));
                 playerInventory.setItem(selectedSlot, ItemStack.EMPTY);
 
@@ -87,7 +97,7 @@ public class ScabbardItem extends Item implements ICurioItem {
 
         if (storedItem == null) { //if no sword in scabbard
 
-            if (!target.is(this.item_type)) {
+            if (!(matches(target, item_type))) {
                 return false;
             }
             ItemStack taken = slot.safeTake(1, 1, player);
@@ -119,7 +129,7 @@ public class ScabbardItem extends Item implements ICurioItem {
     //Right-clicking with other inventory item on this
     public boolean overrideOtherStackedOnMe(ItemStack stack, ItemStack other, Slot slot, ClickAction action, Player player, SlotAccess access) {
 
-        if(!other.is(this.item_type) || other.getCount() != 1 || action != ClickAction.SECONDARY || stack.get(ModDataComponents.STORED_ITEM)!=null){ //if not a sword, who cares
+        if(!(matches(other, item_type)) || other.getCount() != 1 || action != ClickAction.SECONDARY || stack.get(ModDataComponents.STORED_ITEM)!=null){ //if not a sword, who cares
             return false;
         }
 
