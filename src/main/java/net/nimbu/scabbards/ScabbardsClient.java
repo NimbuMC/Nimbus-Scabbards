@@ -19,6 +19,7 @@ import net.nimbu.scabbards.keybinds.ModKeybinds;
 import net.nimbu.scabbards.networking.ScabbardKeyPressedPayload;
 import net.nimbu.scabbards.renderer.ScabbardRenderer;
 import net.nimbu.scabbards.renderer.entity.layers.ModModelLayers;
+import net.nimbu.scabbards.renderer.entity.model.BigScabbardModel;
 import net.nimbu.scabbards.renderer.entity.model.ScabbardModel;
 import net.nimbu.scabbards.renderer.entity.model.WeaponHolsterModel;
 import top.theillusivec4.curios.api.client.CuriosRendererRegistry;
@@ -40,6 +41,10 @@ public class ScabbardsClient {
         event.registerLayerDefinition(
                 ModModelLayers.SCABBARD_LAYER,
                 ScabbardModel::createBodyLayer
+        );
+        event.registerLayerDefinition(
+                ModModelLayers.BIG_SCABBARD_LAYER,
+                BigScabbardModel::createBodyLayer
         );
         event.registerLayerDefinition(
                 ModModelLayers.WEAPON_HOLSTER_LAYER,
@@ -65,6 +70,10 @@ public class ScabbardsClient {
             CuriosRendererRegistry.register(
                     ModItems.WEAPON_HOlSTER.get(),
                     () -> new ScabbardRenderer(1)
+            );
+            CuriosRendererRegistry.register(
+                    ModItems.BIG_SCABBARD.get(),
+                    () -> new ScabbardRenderer(2)
             );
 
 
@@ -95,6 +104,19 @@ public class ScabbardsClient {
                         return 0xFFFFFFFF;
                     },
                     ModItems.WEAPON_HOlSTER.get()
+            );
+            minecraft.getItemColors().register(
+                    (stack, tintIndex) -> {
+                        if (tintIndex == 0) {
+                            return 0xFF000000 | //ORs in the alpha value
+                                    stack.getOrDefault(
+                                            DataComponents.DYED_COLOR,
+                                            new DyedItemColor(0xd37d19, false)
+                                    ).rgb();
+                        }
+                        return 0xFFFFFFFF;
+                    },
+                    ModItems.BIG_SCABBARD.get()
             );
         });
 

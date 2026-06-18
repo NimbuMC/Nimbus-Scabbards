@@ -22,6 +22,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.DyedItemColor;
 import net.nimbu.scabbards.Scabbards;
 import net.nimbu.scabbards.renderer.entity.model.AbstractScabbardModel;
+import net.nimbu.scabbards.renderer.entity.model.BigScabbardModel;
 import net.nimbu.scabbards.renderer.entity.model.ScabbardModel;
 import net.nimbu.scabbards.renderer.entity.model.WeaponHolsterModel;
 import top.theillusivec4.curios.api.SlotContext;
@@ -48,7 +49,6 @@ public class ScabbardRenderer implements ICurioRenderer {
                 OVERLAY_TEXTURE = ResourceLocation.fromNamespaceAndPath(Scabbards.MOD_ID, "textures/entity/scabbard_layer_1.png");
                 break;
             case 1:
-            default:
                 this.MODEL = new WeaponHolsterModel(
                         Minecraft.getInstance()
                                 .getEntityModels()
@@ -58,6 +58,18 @@ public class ScabbardRenderer implements ICurioRenderer {
                                 ))
                 );
                 TEXTURE = ResourceLocation.fromNamespaceAndPath(Scabbards.MOD_ID, "textures/entity/weapon_holster_layer.png");
+                OVERLAY_TEXTURE = null;
+                break;
+            default:
+                this.MODEL = new BigScabbardModel(
+                        Minecraft.getInstance()
+                                .getEntityModels()
+                                .bakeLayer(new ModelLayerLocation(
+                                        ResourceLocation.fromNamespaceAndPath(Scabbards.MOD_ID, "big_scabbard"),
+                                        "main"
+                                ))
+                );
+                TEXTURE = ResourceLocation.fromNamespaceAndPath(Scabbards.MOD_ID, "textures/entity/big_scabbard_layer_0.png");
                 OVERLAY_TEXTURE = null;
                 break;
         }

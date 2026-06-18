@@ -12,6 +12,12 @@ public class ModModelLayers {
                     "main"
             );
 
+    public static final ModelLayerLocation BIG_SCABBARD_LAYER =
+            new ModelLayerLocation(
+                    ResourceLocation.fromNamespaceAndPath(Scabbards.MOD_ID, "big_scabbard"),
+                    "main"
+            );
+
     public static final ModelLayerLocation WEAPON_HOLSTER_LAYER =
             new ModelLayerLocation(
                     ResourceLocation.fromNamespaceAndPath(Scabbards.MOD_ID, "weapon_holster"),
