@@ -18,6 +18,7 @@ import net.minecraft.world.inventory.tooltip.BundleTooltip;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.component.BundleContents;
+import net.minecraft.world.level.Level;
 import net.nimbu.scabbards.component.ModDataComponents;
 import net.nimbu.scabbards.component.StoredItem;
 import net.nimbu.scabbards.config.ScabbardItemCache;
@@ -33,7 +34,19 @@ public class ScabbardItem extends Item implements ICurioItem {
 
     public ScabbardItem(Properties properties, Class<? extends Item> item_type) {
         super(properties);
-        this.item_type =item_type;
+        this.item_type=item_type;
+    }
+
+    @Override
+    public void inventoryTick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected) {
+        super.inventoryTick(stack, level, entity, slotId, isSelected);
+        StoredItem storedItem = stack.get(ModDataComponents.STORED_ITEM);
+
+        if (storedItem==null) {return;}
+
+        ItemStack storedItemStack = storedItem.stack().copy();
+        storedItemStack.getItem().inventoryTick(storedItemStack, level, entity, slotId, isSelected); //also tick the stored item... this might be a bad idea
+        stack.set(ModDataComponents.STORED_ITEM, new StoredItem(storedItemStack));
     }
 
     public static boolean matches(ItemStack stack, Class<? extends Item> type) {
@@ -41,8 +54,12 @@ public class ScabbardItem extends Item implements ICurioItem {
             return false;
         }
 
-        return type.isInstance(stack.getItem()) || ScabbardItemCache.isScabbardExtra(stack.getItem())
-                || ScabbardItemCache.isWeaponHolsterExtra(stack.getItem());
+        boolean defaultItem = type.isInstance(stack.getItem());
+        if (type == SwordItem.class){
+            return defaultItem || ScabbardItemCache.isScabbardExtra(stack.getItem());
+        }
+
+        return defaultItem || ScabbardItemCache.isWeaponHolsterExtra(stack.getItem());
     }
 
     public void drawOrSheathSword(ServerPlayer player, ItemStack scabbardItem){
