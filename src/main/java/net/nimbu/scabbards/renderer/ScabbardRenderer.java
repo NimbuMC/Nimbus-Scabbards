@@ -33,6 +33,7 @@ public class ScabbardRenderer implements ICurioRenderer {
     private final AbstractScabbardModel MODEL;
     private final ResourceLocation TEXTURE;
     private final ResourceLocation OVERLAY_TEXTURE;
+    private final float OFFSET; //for bigger scabbards that need re-aligning
 
     public ScabbardRenderer(int type) {
         switch (type){
@@ -47,6 +48,7 @@ public class ScabbardRenderer implements ICurioRenderer {
                 );
                 TEXTURE = ResourceLocation.fromNamespaceAndPath(Scabbards.MOD_ID, "textures/entity/scabbard_layer_0.png");
                 OVERLAY_TEXTURE = ResourceLocation.fromNamespaceAndPath(Scabbards.MOD_ID, "textures/entity/scabbard_layer_1.png");
+                OFFSET = 0;
                 break;
             case 1:
                 this.MODEL = new WeaponHolsterModel(
@@ -59,6 +61,7 @@ public class ScabbardRenderer implements ICurioRenderer {
                 );
                 TEXTURE = ResourceLocation.fromNamespaceAndPath(Scabbards.MOD_ID, "textures/entity/weapon_holster_layer.png");
                 OVERLAY_TEXTURE = null;
+                OFFSET = 0;
                 break;
             default:
                 this.MODEL = new BigScabbardModel(
@@ -71,6 +74,7 @@ public class ScabbardRenderer implements ICurioRenderer {
                 );
                 TEXTURE = ResourceLocation.fromNamespaceAndPath(Scabbards.MOD_ID, "textures/entity/big_scabbard_layer_0.png");
                 OVERLAY_TEXTURE = null;
+                OFFSET = 0.05f;
                 break;
         }
     }
@@ -137,7 +141,7 @@ public class ScabbardRenderer implements ICurioRenderer {
         poseStack.scale(1.1F, 1.1F, 1.1F);
         poseStack.mulPose(Axis.YP.rotationDegrees(90));
         poseStack.mulPose(Axis.ZP.rotationDegrees(190));
-        poseStack.translate(-0.03, 0.12, 0.13);
+        poseStack.translate(-0.03-(OFFSET), 0.12, 0.13);
 
         //--Main--
         VertexConsumer vc = renderTypeBuffer.getBuffer(RenderType.entityCutout(
