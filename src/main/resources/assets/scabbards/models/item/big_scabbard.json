@@ -1,7 +1,7 @@
 {
   "parent": "minecraft:item/handheld",
   "textures": {
-    "layer0": "scabbards:item/scabbard_0",
+    "layer0": "scabbards:item/big_scabbard",
     "layer1": "scabbards:item/scabbard_1"
   }
 }

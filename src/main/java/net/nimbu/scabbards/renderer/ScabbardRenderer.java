@@ -73,7 +73,7 @@ public class ScabbardRenderer implements ICurioRenderer {
                                 ))
                 );
                 TEXTURE = ResourceLocation.fromNamespaceAndPath(Scabbards.MOD_ID, "textures/entity/big_scabbard_layer_0.png");
-                OVERLAY_TEXTURE = null;
+                OVERLAY_TEXTURE = ResourceLocation.fromNamespaceAndPath(Scabbards.MOD_ID, "textures/entity/big_scabbard_layer_1.png");
                 OFFSET = 0.05f;
                 break;
         }
