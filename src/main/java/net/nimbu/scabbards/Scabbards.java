@@ -68,6 +68,7 @@ public class Scabbards {
     private void addCreative(BuildCreativeModeTabContentsEvent event) {
         if(event.getTabKey() == CreativeModeTabs.COMBAT) {
             event.accept(ModItems.SCABBARD);
+            event.accept(ModItems.BIG_SCABBARD);
             event.accept(ModItems.WEAPON_HOlSTER);
         }
     }
