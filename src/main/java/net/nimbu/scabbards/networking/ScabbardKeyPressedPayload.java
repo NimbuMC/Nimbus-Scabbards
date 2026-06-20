@@ -37,7 +37,6 @@ public record ScabbardKeyPressedPayload() implements CustomPacketPayload {
 
             Item[] items = {
                     ModItems.SCABBARD.get(),
-                    ModItems.BIG_SCABBARD.get(),
                     ModItems.WEAPON_HOlSTER.get()
             };
 

@@ -33,7 +33,7 @@ public class ItemRendererMixin {
             BakedModel model,
             CallbackInfo ci
     ) {
-        if (stack.is(ModItems.SCABBARD.get()) || stack.is(ModItems.WEAPON_HOlSTER.get()) || stack.is(ModItems.BIG_SCABBARD.get())) {
+        if (stack.is(ModItems.SCABBARD.get()) || stack.is(ModItems.WEAPON_HOlSTER.get())) {
             SheathedSwordRenderer.renderItem(stack, displayContext, leftHanded, poseStack, buffer, light, overlay, false);
         }
     }

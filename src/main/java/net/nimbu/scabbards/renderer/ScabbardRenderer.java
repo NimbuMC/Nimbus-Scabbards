@@ -22,7 +22,6 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.DyedItemColor;
 import net.nimbu.scabbards.Scabbards;
 import net.nimbu.scabbards.renderer.entity.model.AbstractScabbardModel;
-import net.nimbu.scabbards.renderer.entity.model.BigScabbardModel;
 import net.nimbu.scabbards.renderer.entity.model.ScabbardModel;
 import net.nimbu.scabbards.renderer.entity.model.WeaponHolsterModel;
 import top.theillusivec4.curios.api.SlotContext;
@@ -33,7 +32,6 @@ public class ScabbardRenderer implements ICurioRenderer {
     private final AbstractScabbardModel MODEL;
     private final ResourceLocation TEXTURE;
     private final ResourceLocation OVERLAY_TEXTURE;
-    private final float OFFSET; //for bigger scabbards that need re-aligning
 
     public ScabbardRenderer(int type) {
         switch (type){
@@ -48,9 +46,9 @@ public class ScabbardRenderer implements ICurioRenderer {
                 );
                 TEXTURE = ResourceLocation.fromNamespaceAndPath(Scabbards.MOD_ID, "textures/entity/scabbard_layer_0.png");
                 OVERLAY_TEXTURE = ResourceLocation.fromNamespaceAndPath(Scabbards.MOD_ID, "textures/entity/scabbard_layer_1.png");
-                OFFSET = 0;
                 break;
             case 1:
+            default:
                 this.MODEL = new WeaponHolsterModel(
                         Minecraft.getInstance()
                                 .getEntityModels()
@@ -61,20 +59,6 @@ public class ScabbardRenderer implements ICurioRenderer {
                 );
                 TEXTURE = ResourceLocation.fromNamespaceAndPath(Scabbards.MOD_ID, "textures/entity/weapon_holster_layer.png");
                 OVERLAY_TEXTURE = null;
-                OFFSET = 0;
-                break;
-            default:
-                this.MODEL = new BigScabbardModel(
-                        Minecraft.getInstance()
-                                .getEntityModels()
-                                .bakeLayer(new ModelLayerLocation(
-                                        ResourceLocation.fromNamespaceAndPath(Scabbards.MOD_ID, "big_scabbard"),
-                                        "main"
-                                ))
-                );
-                TEXTURE = ResourceLocation.fromNamespaceAndPath(Scabbards.MOD_ID, "textures/entity/big_scabbard_layer_0.png");
-                OVERLAY_TEXTURE = ResourceLocation.fromNamespaceAndPath(Scabbards.MOD_ID, "textures/entity/big_scabbard_layer_1.png");
-                OFFSET = 0.05f;
                 break;
         }
     }
@@ -114,7 +98,7 @@ public class ScabbardRenderer implements ICurioRenderer {
         //position relative to player body
         ((PlayerModel<?>) renderLayerParent.getModel()).body.translateAndRotate(poseStack);
 
-        poseStack.translate(-0.35, 0.05, 0.15+armourDepth);
+        poseStack.translate(-0.4, 0.05, 0.15+armourDepth);
         if(leftHanded) {poseStack.translate(0.6, -0.11,0.0);}
         poseStack.scale(0.9375F, 0.9375F, 0.9375F);
 
@@ -141,7 +125,7 @@ public class ScabbardRenderer implements ICurioRenderer {
         poseStack.scale(1.1F, 1.1F, 1.1F);
         poseStack.mulPose(Axis.YP.rotationDegrees(90));
         poseStack.mulPose(Axis.ZP.rotationDegrees(190));
-        poseStack.translate(-0.03-(OFFSET), 0.12, 0.13);
+        poseStack.translate(-0.03, 0.12, 0.13);
 
         //--Main--
         VertexConsumer vc = renderTypeBuffer.getBuffer(RenderType.entityCutout(
