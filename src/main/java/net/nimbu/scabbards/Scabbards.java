@@ -45,7 +45,7 @@ public class Scabbards {
         // Register the item to a creative tab
         modEventBus.addListener(this::addCreative);
 
-        modEventBus.addListener(this::registerKeybinds);
+        //modEventBus.addListener(this::registerKeybinds);
 
         modEventBus.addListener(this::onConfigReload);
         modContainer.registerConfig(ModConfig.Type.SERVER, ScabbardConfig.SPEC);
@@ -54,11 +54,6 @@ public class Scabbards {
         modEventBus.addListener(ModNetworking::register);
 
 
-    }
-
-    private void registerKeybinds(RegisterKeyMappingsEvent event) {
-        ModKeybinds.register();
-        event.register(ModKeybinds.SCABBARD_KEY);
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {
