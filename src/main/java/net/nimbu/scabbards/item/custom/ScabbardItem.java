@@ -185,12 +185,11 @@ public class ScabbardItem extends Item implements ICurioItem {
 
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
 
-        Player player = Minecraft.getInstance().player;
 
         StoredItem storedItem;
         if ((storedItem = stack.get(ModDataComponents.STORED_ITEM))!=null) {
             ItemStack storedItemStack = storedItem.stack();
-            List<Component> storedItemTooltip = storedItemStack.getTooltipLines(context, player, tooltipFlag);
+            List<Component> storedItemTooltip = storedItemStack.getTooltipLines(context, null, tooltipFlag);
             tooltipComponents.add(Component.empty());
             tooltipComponents.add(Component.translatable("tooltip.scabbards.stored_sword").withStyle(ChatFormatting.GOLD));
             for (Component component : storedItemTooltip) {

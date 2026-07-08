@@ -50,10 +50,9 @@ public class Scabbards {
         modEventBus.addListener(this::onConfigReload);
         modContainer.registerConfig(ModConfig.Type.SERVER, ScabbardConfig.SPEC);
 
-        ModKeybinds.register();
+
+
         modEventBus.addListener(ModNetworking::register);
-
-
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {

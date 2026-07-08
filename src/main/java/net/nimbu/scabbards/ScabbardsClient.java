@@ -50,6 +50,7 @@ public class ScabbardsClient {
 
     @SubscribeEvent
     public static void registerKeyMappings(RegisterKeyMappingsEvent event) {
+        ModKeybinds.register();
         event.register(ModKeybinds.SCABBARD_KEY);
     }
 
