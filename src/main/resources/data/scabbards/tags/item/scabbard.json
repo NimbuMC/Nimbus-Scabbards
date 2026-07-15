@@ -1,6 +1,7 @@
 {
   "values": [
     "scabbards:scabbard",
-    "scabbards:weapon_holster"
+    "scabbards:weapon_holster",
+    "scabbards:hip_scabbard"
   ]
 }

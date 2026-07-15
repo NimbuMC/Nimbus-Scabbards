@@ -185,7 +185,6 @@ public class ScabbardItem extends Item implements ICurioItem {
 
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
 
-
         StoredItem storedItem;
         if ((storedItem = stack.get(ModDataComponents.STORED_ITEM))!=null) {
             ItemStack storedItemStack = storedItem.stack();
@@ -197,6 +196,7 @@ public class ScabbardItem extends Item implements ICurioItem {
                         .append(component));
             }
         }
+
     }
 
 //    public void onDestroyed(ItemEntity itemEntity) {

@@ -18,6 +18,7 @@ import net.neoforged.neoforge.network.PacketDistributor;
 import net.nimbu.scabbards.item.ModItems;
 import net.nimbu.scabbards.keybinds.ModKeybinds;
 import net.nimbu.scabbards.networking.ScabbardKeyPressedPayload;
+import net.nimbu.scabbards.renderer.HipScabbardRenderer;
 import net.nimbu.scabbards.renderer.ScabbardRenderer;
 import net.nimbu.scabbards.renderer.entity.layers.ModModelLayers;
 import net.nimbu.scabbards.renderer.entity.model.ScabbardModel;
@@ -72,6 +73,10 @@ public class ScabbardsClient {
             CuriosRendererRegistry.register(
                     ModItems.WEAPON_HOlSTER.get(),
                     () -> new ScabbardRenderer(1)
+            );
+            CuriosRendererRegistry.register(
+                    ModItems.HIP_SCABBARD.get(),
+                    () -> new HipScabbardRenderer(0)
             );
 
 
