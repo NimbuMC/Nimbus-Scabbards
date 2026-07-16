@@ -7,6 +7,7 @@ import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.nimbu.scabbards.item.ModItems;
+import net.nimbu.scabbards.item.custom.ScabbardItem;
 import net.nimbu.scabbards.renderer.ScabbardRenderer;
 import net.nimbu.scabbards.renderer.SheathedSwordRenderer;
 import org.spongepowered.asm.mixin.Mixin;
@@ -33,7 +34,7 @@ public class ItemRendererMixin {
             BakedModel model,
             CallbackInfo ci
     ) {
-        if (stack.is(ModItems.SCABBARD.get()) || stack.is(ModItems.WEAPON_HOlSTER.get())) {
+        if (stack.is(ModItems.SCABBARD.get()) || stack.is(ModItems.WEAPON_HOlSTER.get()) || stack.is(ModItems.HIP_SCABBARD.get())) {
             SheathedSwordRenderer.renderItem(stack, displayContext, leftHanded, poseStack, buffer, light, overlay, false);
         }
     }

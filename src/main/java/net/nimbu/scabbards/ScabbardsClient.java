@@ -108,6 +108,19 @@ public class ScabbardsClient {
                     },
                     ModItems.WEAPON_HOlSTER.get()
             );
+            minecraft.getItemColors().register(
+                    (stack, tintIndex) -> {
+                        if (tintIndex == 0) {
+                            return 0xFF000000 | //ORs in the alpha value
+                                    stack.getOrDefault(
+                                            DataComponents.DYED_COLOR,
+                                            new DyedItemColor(0xd37d19, false)
+                                    ).rgb();
+                        }
+                        return 0xFFFFFFFF;
+                    },
+                    ModItems.HIP_SCABBARD.get()
+            );
         });
 
     }
