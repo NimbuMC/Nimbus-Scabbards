@@ -1,76 +1,60 @@
 package net.nimbu.scabbards;
 
-import net.neoforged.fml.event.config.ModConfigEvent;
-import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
-import net.nimbu.scabbards.component.ModDataComponents;
-import net.nimbu.scabbards.config.ScabbardConfig;
-import net.nimbu.scabbards.config.ScabbardItemCache;
-import net.nimbu.scabbards.item.ModItems;
-import net.nimbu.scabbards.keybinds.ModKeybinds;
-import net.nimbu.scabbards.networking.ModNetworking;
-import org.slf4j.Logger;
-
 import com.mojang.logging.LogUtils;
-
 import net.minecraft.world.item.CreativeModeTabs;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
-import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.event.config.ModConfigEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
+import net.nimbu.scabbards.component.ModDataComponents;
+import net.nimbu.scabbards.config.ScabbardConfig;
+import net.nimbu.scabbards.config.ScabbardItemCache;
+import net.nimbu.scabbards.item.ModItems;
+import net.nimbu.scabbards.networking.ModNetworking;
+import org.slf4j.Logger;
 
-// The value here should match an entry in the META-INF/neoforge.mods.toml file
 @Mod(Scabbards.MOD_ID)
 public class Scabbards {
-    // Define mod id in a common place for everything to reference
+
     public static final String MOD_ID = "scabbards";
-    // Directly reference a slf4j logger
     public static final Logger LOGGER = LogUtils.getLogger();
 
-    // The constructor for the mod class is the first code that is run when your mod is loaded.
-    // FML will recognize some parameter types like IEventBus or ModContainer and pass them in automatically.
     public Scabbards(IEventBus modEventBus, ModContainer modContainer) {
-        // Register the commonSetup method for modloading
         modEventBus.addListener(this::commonSetup);
-
         NeoForge.EVENT_BUS.register(this);
 
         ModItems.register(modEventBus);
         ModDataComponents.register(modEventBus);
 
-        // Register the item to a creative tab
         modEventBus.addListener(this::addCreative);
-
-        //modEventBus.addListener(this::registerKeybinds);
-
         modEventBus.addListener(this::onConfigReload);
+        modEventBus.addListener(ModNetworking::register);
+
         modContainer.registerConfig(ModConfig.Type.SERVER, ScabbardConfig.SPEC);
 
-
-
-        modEventBus.addListener(ModNetworking::register);
+        // Do not initialize client KeyMapping classes here.
+        // ScabbardsClient handles key creation and registration on the client.
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {
-
     }
 
     private void addCreative(BuildCreativeModeTabContentsEvent event) {
-        if(event.getTabKey() == CreativeModeTabs.COMBAT) {
+        if (event.getTabKey() == CreativeModeTabs.COMBAT) {
             event.accept(ModItems.SCABBARD);
             event.accept(ModItems.WEAPON_HOlSTER);
-            event.accept(ModItems.HIP_SCABBARD);
         }
     }
 
-    // You can use SubscribeEvent and let the Event Bus discover methods to call
     @SubscribeEvent
     public void onServerStarting(ServerStartingEvent event) {
-        ScabbardItemCache.reload(); //set up cache
+        ScabbardItemCache.reload();
     }
 
     private void onConfigReload(ModConfigEvent.Reloading event) {
